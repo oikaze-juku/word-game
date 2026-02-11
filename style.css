@@ -38,6 +38,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -152,6 +153,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 16px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
 }
 
 .setting-label {
@@ -159,51 +165,62 @@ body {
     font-weight: 600;
 }
 
-/* トグルスイッチ */
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
+.volume-slider {
+    width: 120px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.3);
-    transition: 0.3s;
-    border-radius: 34px;
 }
 
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.3s;
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
     border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
 }
 
-input:checked + .toggle-slider {
-    background-color: #4CAF50;
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
 }
 
-input:checked + .toggle-slider:before {
-    transform: translateX(26px);
+.volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
 }
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+.volume-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    min-width: 45px;
+    text-align: right;
+}
+
 
 /* ボタン */
 .primary-btn,
@@ -297,9 +314,12 @@ input:checked + .toggle-slider:before {
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.05);
     }
@@ -381,14 +401,68 @@ input:checked + .toggle-slider:before {
         transform: scale(0.8);
         opacity: 0;
     }
+
     50% {
         transform: scale(1.1);
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
     }
 }
+
+/* 間違い演出 */
+.answer-slot.wrong {
+    background: rgba(255, 87, 87, 0.5);
+    border-color: rgba(255, 87, 87, 0.9);
+    animation: wrongShake 0.5s ease;
+}
+
+@keyframes wrongShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-8px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(8px);
+    }
+}
+
+.answer-area.wrong-flash {
+    animation: wrongFlash 0.5s ease;
+}
+
+@keyframes wrongFlash {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    25%,
+    75% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
 
 .letter-panel {
     margin-top: auto;
@@ -520,13 +594,13 @@ input:checked + .toggle-slider:before {
         height: 52px;
         font-size: 22px;
     }
-    
+
     .answer-slot {
         width: 44px;
         height: 56px;
         font-size: 24px;
     }
-    
+
     .question-text {
         font-size: 32px;
     }
