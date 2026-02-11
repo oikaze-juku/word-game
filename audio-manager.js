@@ -36,6 +36,10 @@ class AudioManager {
         this.stopBGM();
         if (!this.isBGMEnabled) return;
 
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume().catch(e => console.log('Audio resume failed:', e));
+        }
+
         this.currentBGM = this.createMelody([
             { freq: 523.25, duration: 0.3 }, // C5
             { freq: 587.33, duration: 0.3 }, // D5
@@ -51,6 +55,10 @@ class AudioManager {
     playGameBGM() {
         this.stopBGM();
         if (!this.isBGMEnabled) return;
+
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume().catch(e => console.log('Audio resume failed:', e));
+        }
 
         this.currentBGM = this.createMelody([
             { freq: 440.00, duration: 0.4 }, // A4

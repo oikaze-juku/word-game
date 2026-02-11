@@ -1,4 +1,62 @@
 /* ========================================
+   オーディオ開始オーバーレイ
+   ======================================== */
+.start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.start-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.overlay-content {
+    text-align: center;
+    color: white;
+}
+
+.overlay-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.overlay-text {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.tap-icon {
+    font-size: 48px;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* ========================================
    リセット & ベーススタイル
    ======================================== */
 * {
@@ -273,6 +331,9 @@ body {
 /* ========================================
    ゲームメイン画面
    ======================================== */
+/* ========================================
+   ゲームメイン画面
+   ======================================== */
 .game-container {
     width: 100%;
     max-width: 480px;
@@ -280,44 +341,165 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding: 20px;
+    padding: 16px;
+    /* 余白を少し詰める */
 }
 
-.game-header {
+/* ... (other styles remain unchanged until letter-panel) ... */
+
+.letter-panel {
+    margin-top: auto;
+    padding-bottom: 80px;
+    /* 下部ボタンエリア確保のためさらに上げる */
+}
+
+.letter-buttons {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+    /* 隙間を縮めてボタンを大きく */
+    justify-content: center;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-.header-left,
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.header-right {
-    justify-content: flex-end;
-}
-
-.retire-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 13px;
+.letter-btn {
+    width: 64px;
+    /* ベースサイズアップ */
+    height: 64px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 12px;
+    font-size: 28px;
     font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    color: #667eea;
     cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    /* 高速反応設定 */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transform: translateZ(0);
+    /* ハードウェアアクセラレーション */
 }
 
-.retire-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
+.letter-btn:active {
+    transform: scale(0.92) translateZ(0);
+    background: #ffffff;
+    transition: transform 0.05s ease;
+    /* アニメーション高速化 */
 }
+
+/* ========================================
+   リザルト画面
+   ======================================== */
+/* ... (result screen styles) ... */
+
+.result-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    /* 下部に固定 */
+    padding-bottom: 20px;
+}
+
+/* ボタン調整（スクロール不要にするため高さ圧縮） */
+.primary-btn,
+.secondary-btn {
+    width: 100%;
+    padding: 14px 24px;
+    /* パディング縮小 */
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 54px;
+    /* 高さ縮小 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+
+/* ========================================
+   レスポンシブ調整
+   ======================================== */
+@media (max-width: 400px) {
+
+    /* 基準を少し広げる */
+    .letter-btn {
+        width: 19vw;
+        /* 画面幅に応じたサイズ */
+        height: 19vw;
+        max-width: 68px;
+        max-height: 68px;
+        font-size: 26px;
+    }
+
+    .answer-slot {
+        width: 40px;
+        height: 52px;
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+
+    .question-text {
+        font-size: 28px;
+    }
+
+    .game-container {
+        padding: 12px;
+    }
+
+    .letter-panel {
+        padding-bottom: 90px;
+    }
+
+    .result-title {
+        margin-top: 20px;
+        font-size: 28px;
+    }
+
+    .final-score {
+        padding: 20px 16px;
+    }
+
+    .score-number {
+        font-size: 60px;
+    }
+
+    /* リザルト画面でボタンが見切れないようにリストの高さを調整 */
+    .review-section {
+        flex: 1;
+        /* 残りのスペースを埋める */
+        min-height: 0;
+        /* フレックスアイテムの縮小を許可 */
+        max-height: none;
+        /* 固定高さを解除 */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        /* コンテナ自体はスクロールさせない */
+    }
+
+    .review-list {
+        overflow-y: auto;
+        /* リスト内だけスクロール */
+        padding-right: 4px;
+    }
+
+    .container {
+        height: 100vh;
+        justify-content: space-between;
+        padding-bottom: 20px;
+    }
+}
+
 
 .timer-display,
 .score-display,
@@ -567,15 +749,18 @@ body {
 }
 
 .letter-panel {
-    margin-top: auto;
-    padding-bottom: 20px;
+    margin-top: 20px;
+    padding-bottom: 60px;
+    /* 上に寄せてホームバー等を回避 */
 }
 
 .letter-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     justify-content: center;
+    max-width: 420px;
+    margin: 0 auto;
 }
 
 .letter-btn {

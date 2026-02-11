@@ -55,6 +55,21 @@ const menuBtn = document.getElementById('menu-btn');
 // 初期化
 // ========================================
 async function init() {
+    const startOverlay = document.getElementById('start-overlay');
+
+    // オーディオ初期化のイベント設定（一回限り）
+    const unlockAudio = async () => {
+        if (audioManager.audioContext.state === 'suspended') {
+            await audioManager.audioContext.resume();
+        }
+        audioManager.playMenuBGM();
+        startOverlay.classList.add('hidden');
+        // イベント解除
+        startOverlay.removeEventListener('click', unlockAudio);
+    };
+
+    startOverlay.addEventListener('click', unlockAudio);
+
     // 単語データの読み込み
     try {
         const response = await fetch('words.json');
@@ -67,7 +82,6 @@ async function init() {
     }
 
     setupEventListeners();
-    audioManager.playMenuBGM();
 }
 
 function setupEventListeners() {
