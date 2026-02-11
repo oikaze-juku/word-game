@@ -37,6 +37,7 @@ const timerDisplay = document.getElementById('timer');
 const currentScoreDisplay = document.getElementById('current-score');
 const questionText = document.getElementById('question-text');
 const answerSlots = document.getElementById('answer-slots');
+const answerArea = document.querySelector('.answer-area');
 const letterButtons = document.getElementById('letter-buttons');
 
 const finalScoreDisplay = document.getElementById('final-score');
@@ -322,18 +323,25 @@ function showWrongAnimation() {
     slots.forEach(slot => {
         slot.classList.add('wrong');
     });
-    answerArea.classList.add('wrong-flash');
+
+    // answerAreaが存在する場合のみクラスを追加
+    if (answerArea) {
+        answerArea.classList.add('wrong-flash');
+    }
 
     // アニメーション後、次の問題へ
     setTimeout(() => {
         slots.forEach(slot => {
             slot.classList.remove('wrong');
         });
-        answerArea.classList.remove('wrong-flash');
+
+        if (answerArea) {
+            answerArea.classList.remove('wrong-flash');
+        }
 
         setTimeout(() => {
+            isCheckingAnswer = false; // フラグを先にリセット
             loadNextWord();
-            isCheckingAnswer = false;
         }, 100);
     }, 600);
 }
