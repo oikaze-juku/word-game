@@ -379,7 +379,8 @@ body {
     background: rgba(255, 255, 255, 0.95);
     border: none;
     border-radius: 12px;
-    font-size: 28px;
+    font-size: 34px;
+    /* フォントサイズアップ */
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
     color: #667eea;
@@ -447,7 +448,8 @@ body {
         height: 19vw;
         max-width: 68px;
         max-height: 68px;
-        font-size: 26px;
+        font-size: 32px;
+        /* スマホでも大きく */
     }
 
     .answer-slot {
@@ -746,13 +748,28 @@ body {
     animation: fillSlot 0.3s ease;
 }
 
+.answer-slot.active {
+    border-color: #FFD700;
+    background: rgba(255, 215, 0, 0.15);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    transform: scale(1.05);
+    z-index: 2;
+}
+
 /* ペナルティ用のヒント表示 */
 .answer-slot.hint::after {
     content: attr(data-hint);
     position: absolute;
     font-size: 28px;
-    opacity: 0.25;
+    opacity: 0.4;
+    /* 視認性を少し上げる */
     color: white;
+    font-weight: 700;
+}
+
+.answer-slot.filled::after {
+    display: none;
+    /* 入力済みならヒントを消す */
 }
 
 @keyframes fillSlot {

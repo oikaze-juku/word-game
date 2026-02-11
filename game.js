@@ -251,12 +251,22 @@ function loadNextWord() {
 
 function createAnswerSlots() {
     answerSlots.innerHTML = '';
+    const isLongWord = currentWord.english.length >= 7;
+
     for (let i = 0; i < currentWord.english.length; i++) {
         const slot = document.createElement('div');
         slot.className = 'answer-slot';
         slot.dataset.index = i;
+
+        // 7文字以上の単語は、最初の1文字だけヒントを表示
+        if (isLongWord && i === 0) {
+            slot.classList.add('hint');
+            slot.dataset.hint = currentWord.english[i].toLowerCase();
+        }
+
         answerSlots.appendChild(slot);
     }
+    updateAnswerSlots(); // 初期状態でアクティブスロットを設定
 }
 
 function createLetterButtons() {
@@ -341,13 +351,25 @@ function enterPenaltyMode() {
 
 function updateAnswerSlots() {
     const slots = answerSlots.querySelectorAll('.answer-slot');
+
+    // 全スロットから active を削除
+    slots.forEach(slot => slot.classList.remove('active'));
+
     userAnswer.forEach((letter, index) => {
         if (slots[index]) {
             slots[index].textContent = letter.toLowerCase();
             slots[index].classList.add('filled');
-            slots[index].classList.remove('hint');
+            slots[index].classList.remove('hint'); // 入力されたらヒントクラスも念のため外す
         }
     });
+
+    // 次に入力すべきスロットを光らせる（アクティブ化）
+    if (userAnswer.length < currentWord.english.length) {
+        const nextIndex = userAnswer.length;
+        if (slots[nextIndex]) {
+            slots[nextIndex].classList.add('active');
+        }
+    }
 }
 
 // ========================================
