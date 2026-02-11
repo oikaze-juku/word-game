@@ -135,19 +135,19 @@ body {
 
 .title-sub {
     display: block;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
     letter-spacing: 2px;
-    margin-top: 8px;
+    margin-top: 4px;
     opacity: 0.95;
 }
 
 .game-description {
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     opacity: 0.9;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .difficulty-section,
@@ -155,52 +155,61 @@ body {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 24px;
+    padding: 16px;
+    /* パディング縮小 */
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .section-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-align: center;
 }
 
 .difficulty-buttons {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    /* 横並びに変更 */
+    gap: 8px;
+    justify-content: space-between;
 }
 
 .difficulty-btn {
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 16px;
-    padding: 20px;
-    font-size: 18px;
+    border-radius: 12px;
+    padding: 8px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffffff;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
+    flex-direction: column;
+    /* アイコンを上に */
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    min-height: 60px;
-}
-
-.difficulty-btn:active {
-    transform: scale(0.98);
+    gap: 4px;
+    min-height: auto;
+    flex: 1;
+    /* 均等幅 */
+    height: 70px;
 }
 
 .difficulty-btn.selected {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    background: #FFD700;
+    /* 黄色背景 */
+    border-color: #FFD700;
+    color: #333333;
+    /* 文字色を黒に */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    transform: scale(1.05);
+    z-index: 10;
 }
 
 .difficulty-icon {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .difficulty-label {
@@ -501,24 +510,100 @@ body {
 }
 
 
-.timer-display,
-.score-display,
-.combo-display {
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    position: relative;
+    /* コンボ表示の基準点 */
+}
+
+.header-left,
+.header-right {
+    flex: 1;
+    /* 両端を均等に確保 */
+    display: flex;
+    align-items: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.header-center {
+    flex: 2;
+    /* スコアを中心に */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.retire-btn {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.retire-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.timer-display {
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     border-radius: 12px;
-    padding: 10px 16px;
+    padding: 6px 12px;
     display: flex;
     align-items: center;
     gap: 6px;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.score-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
+}
+
+.score-label {
+    font-size: 10px;
+    opacity: 0.8;
+    letter-spacing: 1px;
+    line-height: 1;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.score-value {
+    font-size: 36px;
+    font-weight: 900;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .timer-icon {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .timer-value {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
 }
@@ -540,17 +625,19 @@ body {
     }
 }
 
-.score-display,
 .combo-display {
-    flex-direction: column;
-    gap: 2px;
-    min-width: 80px;
-}
-
-.combo-display {
-    display: none;
+    position: absolute;
+    top: 55px;
+    /* スコアの下に配置 */
+    left: 50%;
+    transform: translateX(-50%);
     background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
     color: #333;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: none;
+    z-index: 5;
+    white-space: nowrap;
 }
 
 .combo-display.active {
@@ -558,28 +645,15 @@ body {
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes popIn {
-    0% {
-        transform: scale(0);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.score-label,
 .combo-label {
     font-size: 10px;
-    opacity: 0.9;
-    font-weight: bold;
+    font-weight: 900;
+    margin-right: 4px;
 }
 
-.score-value,
 .combo-value {
-    font-size: 18px;
-    font-weight: 800;
-    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
 }
 
 .question-area {

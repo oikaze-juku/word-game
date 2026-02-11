@@ -359,7 +359,13 @@ function checkAnswer() {
 
     if (userWord === correctWord) {
         if (!isPenaltyMode) {
-            let gainedScore = 100 + (comboCount * 10);
+            // 累進的なコンボボーナス計算
+            // ベース100点 + コンボ数に応じたボーナス
+            let bonus = comboCount * 10;
+            if (comboCount >= 5) bonus += (comboCount - 4) * 20;
+            if (comboCount >= 10) bonus += (comboCount - 9) * 40;
+
+            let gainedScore = Math.min(100 + bonus, 1500);
             score += gainedScore;
             comboCount++;
             showScorePopup(gainedScore, comboCount);
