@@ -1,0 +1,248 @@
+{
+  "beginner": [
+    {
+      "english": "apple",
+      "japanese": "りんご"
+    },
+    {
+      "english": "book",
+      "japanese": "本"
+    },
+    {
+      "english": "cat",
+      "japanese": "猫"
+    },
+    {
+      "english": "dog",
+      "japanese": "犬"
+    },
+    {
+      "english": "fish",
+      "japanese": "魚"
+    },
+    {
+      "english": "house",
+      "japanese": "家"
+    },
+    {
+      "english": "tree",
+      "japanese": "木"
+    },
+    {
+      "english": "water",
+      "japanese": "水"
+    },
+    {
+      "english": "sun",
+      "japanese": "太陽"
+    },
+    {
+      "english": "moon",
+      "japanese": "月"
+    },
+    {
+      "english": "star",
+      "japanese": "星"
+    },
+    {
+      "english": "car",
+      "japanese": "車"
+    },
+    {
+      "english": "pen",
+      "japanese": "ペン"
+    },
+    {
+      "english": "desk",
+      "japanese": "机"
+    },
+    {
+      "english": "chair",
+      "japanese": "椅子"
+    },
+    {
+      "english": "door",
+      "japanese": "ドア"
+    },
+    {
+      "english": "bird",
+      "japanese": "鳥"
+    },
+    {
+      "english": "hand",
+      "japanese": "手"
+    },
+    {
+      "english": "eye",
+      "japanese": "目"
+    },
+    {
+      "english": "red",
+      "japanese": "赤"
+    }
+  ],
+  "intermediate": [
+    {
+      "english": "beautiful",
+      "japanese": "美しい"
+    },
+    {
+      "english": "important",
+      "japanese": "重要な"
+    },
+    {
+      "english": "different",
+      "japanese": "異なる"
+    },
+    {
+      "english": "possible",
+      "japanese": "可能な"
+    },
+    {
+      "english": "necessary",
+      "japanese": "必要な"
+    },
+    {
+      "english": "difficult",
+      "japanese": "難しい"
+    },
+    {
+      "english": "wonderful",
+      "japanese": "素晴らしい"
+    },
+    {
+      "english": "dangerous",
+      "japanese": "危険な"
+    },
+    {
+      "english": "knowledge",
+      "japanese": "知識"
+    },
+    {
+      "english": "experience",
+      "japanese": "経験"
+    },
+    {
+      "english": "education",
+      "japanese": "教育"
+    },
+    {
+      "english": "situation",
+      "japanese": "状況"
+    },
+    {
+      "english": "technology",
+      "japanese": "技術"
+    },
+    {
+      "english": "community",
+      "japanese": "地域社会"
+    },
+    {
+      "english": "understand",
+      "japanese": "理解する"
+    },
+    {
+      "english": "remember",
+      "japanese": "覚えている"
+    },
+    {
+      "english": "continue",
+      "japanese": "続ける"
+    },
+    {
+      "english": "develop",
+      "japanese": "発展させる"
+    },
+    {
+      "english": "discover",
+      "japanese": "発見する"
+    },
+    {
+      "english": "consider",
+      "japanese": "考慮する"
+    }
+  ],
+  "advanced": [
+    {
+      "english": "extraordinary",
+      "japanese": "並外れた"
+    },
+    {
+      "english": "sophisticated",
+      "japanese": "洗練された"
+    },
+    {
+      "english": "comprehensive",
+      "japanese": "包括的な"
+    },
+    {
+      "english": "controversial",
+      "japanese": "議論を呼ぶ"
+    },
+    {
+      "english": "unprecedented",
+      "japanese": "前例のない"
+    },
+    {
+      "english": "indispensable",
+      "japanese": "不可欠な"
+    },
+    {
+      "english": "overwhelming",
+      "japanese": "圧倒的な"
+    },
+    {
+      "english": "fundamental",
+      "japanese": "基本的な"
+    },
+    {
+      "english": "substantial",
+      "japanese": "実質的な"
+    },
+    {
+      "english": "significant",
+      "japanese": "重要な"
+    },
+    {
+      "english": "consciousness",
+      "japanese": "意識"
+    },
+    {
+      "english": "independence",
+      "japanese": "独立"
+    },
+    {
+      "english": "responsibility",
+      "japanese": "責任"
+    },
+    {
+      "english": "characteristic",
+      "japanese": "特徴"
+    },
+    {
+      "english": "infrastructure",
+      "japanese": "インフラ"
+    },
+    {
+      "english": "sustainability",
+      "japanese": "持続可能性"
+    },
+    {
+      "english": "implementation",
+      "japanese": "実装"
+    },
+    {
+      "english": "transformation",
+      "japanese": "変革"
+    },
+    {
+      "english": "collaboration",
+      "japanese": "協力"
+    },
+    {
+      "english": "demonstrate",
+      "japanese": "実証する"
+    }
+  ]
+}
