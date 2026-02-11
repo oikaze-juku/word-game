@@ -16,8 +16,11 @@ let userAnswer = [];
 let score = 0;
 let timeRemaining = 60;
 let timerInterval = null;
-let answeredWords = [];
+let mistakenWords = [];
 let isCheckingAnswer = false;
+let comboCount = 0;
+let isPenaltyMode = false; // 不正解後のペナルティモード
+let hurrying = false; // 焦るBGMフラグ
 
 // ========================================
 // DOM要素の取得
@@ -32,6 +35,8 @@ const bgmVolumeSlider = document.getElementById('bgm-volume');
 const sfxVolumeSlider = document.getElementById('sfx-volume');
 const bgmVolumeValue = document.getElementById('bgm-volume-value');
 const sfxVolumeValue = document.getElementById('sfx-volume-value');
+const bgmToggleBtn = document.getElementById('bgm-toggle-btn');
+const retireBtn = document.getElementById('retire-btn');
 
 const timerDisplay = document.getElementById('timer');
 const currentScoreDisplay = document.getElementById('current-score');
@@ -39,6 +44,7 @@ const questionText = document.getElementById('question-text');
 const answerSlots = document.getElementById('answer-slots');
 const answerArea = document.querySelector('.answer-area');
 const letterButtons = document.getElementById('letter-buttons');
+const questionArea = document.querySelector('.question-area');
 
 const finalScoreDisplay = document.getElementById('final-score');
 const reviewList = document.getElementById('review-list');
@@ -60,10 +66,7 @@ async function init() {
         return;
     }
 
-    // イベントリスナーの設定
     setupEventListeners();
-
-    // メニューBGMを再生
     audioManager.playMenuBGM();
 }
 
@@ -85,6 +88,23 @@ function setupEventListeners() {
         bgmVolumeValue.textContent = e.target.value + '%';
     });
 
+    // BGMトグルボタン
+    if (bgmToggleBtn) {
+        bgmToggleBtn.addEventListener('click', () => {
+            const isEnabled = audioManager.toggleBGM();
+            bgmToggleBtn.textContent = isEnabled ? '🔊' : '🔇';
+            bgmToggleBtn.style.opacity = isEnabled ? '1' : '0.5';
+
+            if (isEnabled) {
+                if (currentState === GameState.MENU) audioManager.playMenuBGM();
+                else if (currentState === GameState.PLAYING) {
+                    if (hurrying) audioManager.playHurryBGM();
+                    else audioManager.playGameBGM();
+                }
+            }
+        });
+    }
+
     // 効果音音量設定
     sfxVolumeSlider.addEventListener('input', (e) => {
         const volume = e.target.value / 100;
@@ -95,10 +115,13 @@ function setupEventListeners() {
     // ゲーム開始
     startBtn.addEventListener('click', startGame);
 
+    // リタイア
+    if (retireBtn) {
+        retireBtn.addEventListener('click', endGame);
+    }
+
     // リトライ
-    retryBtn.addEventListener('click', () => {
-        startGame();
-    });
+    retryBtn.addEventListener('click', startGame);
 
     // メニューに戻る
     menuBtn.addEventListener('click', () => {
@@ -139,14 +162,15 @@ function showScreen(state) {
 function startGame() {
     resetGame();
 
-    // 選択された難易度の単語リストを取得
     wordList = [...window.wordsData[selectedDifficulty]];
     shuffleArray(wordList);
 
     currentWordIndex = 0;
     score = 0;
+    comboCount = 0;
     timeRemaining = 60;
-    answeredWords = [];
+    hurrying = false;
+    mistakenWords = [];
 
     showScreen(GameState.PLAYING);
     updateScore();
@@ -161,6 +185,9 @@ function resetGame() {
     }
     userAnswer = [];
     currentWord = null;
+    isPenaltyMode = false;
+    document.querySelector('.timer-display').classList.remove('warning');
+    updateComboDisplay();
 }
 
 // ========================================
@@ -173,8 +200,10 @@ function startTimer() {
         timeRemaining--;
         updateTimerDisplay();
 
-        if (timeRemaining <= 10) {
+        if (timeRemaining <= 10 && !hurrying) {
             document.querySelector('.timer-display').classList.add('warning');
+            hurrying = true;
+            audioManager.playHurryBGM();
         }
 
         if (timeRemaining <= 0) {
@@ -192,7 +221,6 @@ function updateTimerDisplay() {
 // ========================================
 function loadNextWord() {
     if (currentWordIndex >= wordList.length) {
-        // 単語リストを使い切ったらシャッフルして再利用
         shuffleArray(wordList);
         currentWordIndex = 0;
     }
@@ -200,20 +228,15 @@ function loadNextWord() {
     currentWord = wordList[currentWordIndex];
     currentWordIndex++;
     userAnswer = [];
+    isPenaltyMode = false;
 
-    // 問題表示
     questionText.textContent = currentWord.japanese;
-
-    // 回答スロットの生成
     createAnswerSlots();
-
-    // 文字ボタンの生成
     createLetterButtons();
 }
 
 function createAnswerSlots() {
     answerSlots.innerHTML = '';
-
     for (let i = 0; i < currentWord.english.length; i++) {
         const slot = document.createElement('div');
         slot.className = 'answer-slot';
@@ -224,20 +247,16 @@ function createAnswerSlots() {
 
 function createLetterButtons() {
     letterButtons.innerHTML = '';
-
-    // 単語の文字をシャッフル
     const letters = currentWord.english.split('');
     shuffleArray(letters);
 
     letters.forEach((letter, index) => {
         const btn = document.createElement('button');
         btn.className = 'letter-btn';
-        btn.textContent = letter.toLowerCase(); // 小文字で表示
+        btn.textContent = letter.toLowerCase();
         btn.dataset.letter = letter;
         btn.dataset.index = index;
-
         btn.addEventListener('click', () => handleLetterClick(btn));
-
         letterButtons.appendChild(btn);
     });
 }
@@ -246,42 +265,73 @@ function createLetterButtons() {
 // 文字タップ処理
 // ========================================
 function handleLetterClick(btn) {
-    if (isCheckingAnswer) return;
+    if (isCheckingAnswer || btn.classList.contains('used')) return;
 
     const letter = btn.dataset.letter;
     const currentIndex = userAnswer.length;
 
-    // 正しい文字かチェック
+    // 正解の文字かチェック
     if (letter === currentWord.english[currentIndex]) {
-        // 正解の文字
-        audioManager.playCorrectSound();
-
-        // 回答に追加
+        audioManager.playCorrectSound(comboCount);
         userAnswer.push(letter);
-
-        // ボタンを無効化
         btn.classList.add('used');
-
-        // 回答スロットに表示
         updateAnswerSlots();
 
-        // 回答が完成したかチェック
         if (userAnswer.length === currentWord.english.length) {
             checkAnswer();
         }
     } else {
-        // 不正解の文字
-        showWrongAnimation();
+        // 不正解
+        if (!mistakenWords.some(w => w.english === currentWord.english)) {
+            mistakenWords.push({
+                japanese: currentWord.japanese,
+                english: currentWord.english
+            });
+        }
+        enterPenaltyMode();
+    }
+}
+
+function enterPenaltyMode() {
+    if (isPenaltyMode) {
+        audioManager.playWrongSound();
+        return; // すでにペナルティ中なら音だけ出す
+    }
+
+    isPenaltyMode = true;
+    comboCount = 0; // コンボリセット
+    updateComboDisplay();
+    audioManager.playWrongSound();
+
+    // 回答リセット
+    userAnswer = [];
+    const usedBtns = letterButtons.querySelectorAll('.letter-btn.used');
+    usedBtns.forEach(b => b.classList.remove('used'));
+
+    // スロットにヒントを表示（CSSで制御）
+    const slots = answerSlots.querySelectorAll('.answer-slot');
+    slots.forEach((slot, i) => {
+        slot.textContent = '';
+        slot.classList.remove('filled');
+        slot.classList.add('hint');
+        slot.dataset.hint = currentWord.english[i].toLowerCase();
+        slot.classList.add('wrong'); // 一瞬赤くする
+        setTimeout(() => slot.classList.remove('wrong'), 500);
+    });
+
+    if (answerArea) {
+        answerArea.classList.add('wrong-flash');
+        setTimeout(() => answerArea.classList.remove('wrong-flash'), 500);
     }
 }
 
 function updateAnswerSlots() {
     const slots = answerSlots.querySelectorAll('.answer-slot');
-
     userAnswer.forEach((letter, index) => {
         if (slots[index]) {
-            slots[index].textContent = letter.toLowerCase(); // 小文字で表示
+            slots[index].textContent = letter.toLowerCase();
             slots[index].classList.add('filled');
+            slots[index].classList.remove('hint');
         }
     });
 }
@@ -294,56 +344,65 @@ function checkAnswer() {
     const correctWord = currentWord.english;
 
     if (userWord === correctWord) {
-        // 正解
-        score++;
-        updateScore();
-        answeredWords.push({
-            japanese: currentWord.japanese,
-            english: currentWord.english
-        });
+        if (!isPenaltyMode) {
+            let gainedScore = 100 + (comboCount * 10);
+            score += gainedScore;
+            comboCount++;
+            showScorePopup(gainedScore, comboCount);
+            audioManager.playWordCorrectSound(comboCount);
+        } else {
+            // ペナルティモード中は得点なし、音は控えめ
+            audioManager.playWordCorrectSound(0);
+        }
 
-        // 次の問題へ
+        // ここでは復習リストの追加は行わず、正解処理のみ
+        updateScore();
+        updateComboDisplay();
+
+        isCheckingAnswer = true;
         setTimeout(() => {
+            isCheckingAnswer = false;
             loadNextWord();
-        }, 400);
+        }, 600);
     }
 }
 
-// 間違い演出
-function showWrongAnimation() {
-    if (isCheckingAnswer) return;
+function showScorePopup(points, combo) {
+    const popup = document.createElement('div');
+    popup.className = 'score-popup';
+    let text = `+${points}`;
+    if (combo >= 5) {
+        text += ` Combo!`;
+        popup.style.color = '#ffeb3b';
+        popup.style.fontSize = '48px';
+    }
+    popup.textContent = text;
+    questionArea.appendChild(popup);
+    setTimeout(() => popup.remove(), 1000);
+}
 
-    isCheckingAnswer = true;
+function updateComboDisplay() {
+    let comboContainer = document.getElementById('combo-container');
+    if (!comboContainer) return;
 
-    // ブー音を再生
-    audioManager.playWrongSound();
-
-    // 間違いアニメーション
-    const slots = answerSlots.querySelectorAll('.answer-slot');
-    slots.forEach(slot => {
-        slot.classList.add('wrong');
-    });
-
-    // answerAreaが存在する場合のみクラスを追加
-    if (answerArea) {
-        answerArea.classList.add('wrong-flash');
+    let comboEl = document.getElementById('combo-display');
+    if (!comboEl) {
+        comboEl = document.createElement('div');
+        comboEl.id = 'combo-display';
+        comboEl.className = 'combo-display';
+        comboEl.innerHTML = `<span class="combo-label">COMBO</span><span class="combo-value" id="combo-value">0</span>`;
+        comboContainer.appendChild(comboEl);
     }
 
-    // アニメーション後、次の問題へ
-    setTimeout(() => {
-        slots.forEach(slot => {
-            slot.classList.remove('wrong');
-        });
-
-        if (answerArea) {
-            answerArea.classList.remove('wrong-flash');
-        }
-
-        setTimeout(() => {
-            isCheckingAnswer = false; // フラグを先にリセット
-            loadNextWord();
-        }, 100);
-    }, 600);
+    const comboValue = document.getElementById('combo-value');
+    if (comboCount >= 2) {
+        comboEl.style.display = 'flex';
+        comboEl.classList.add('active');
+        comboValue.textContent = comboCount;
+    } else {
+        comboEl.classList.remove('active');
+        comboEl.style.display = 'none';
+    }
 }
 
 function updateScore() {
@@ -354,25 +413,22 @@ function updateScore() {
 // ゲーム終了
 // ========================================
 function endGame() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-
-    // リザルト画面へ
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
     showScreen(GameState.RESULT);
     displayResults();
 }
 
 function displayResults() {
-    // スコア表示
     finalScoreDisplay.textContent = score;
-
-    // 復習リスト表示
     reviewList.innerHTML = '';
 
-    if (answeredWords.length === 0) {
-        reviewList.innerHTML = '<p style="text-align: center; opacity: 0.7;">正解した単語がありません</p>';
+    if (mistakenWords.length === 0) {
+        reviewList.innerHTML = '<p style="text-align: center; opacity: 0.7;">間違えた単語はありません👏</p>';
     } else {
-        answeredWords.forEach(word => {
+        mistakenWords.forEach(word => {
             const item = document.createElement('div');
             item.className = 'review-item';
             item.innerHTML = `
@@ -395,7 +451,4 @@ function shuffleArray(array) {
     return array;
 }
 
-// ========================================
-// アプリケーション起動
-// ========================================
 document.addEventListener('DOMContentLoaded', init);

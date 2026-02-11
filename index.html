@@ -44,7 +44,10 @@
             <div class="settings-section">
                 <h2 class="section-title">音量設定</h2>
                 <div class="setting-item">
-                    <span class="setting-label">BGM音量</span>
+                    <div class="setting-label-row">
+                        <span class="setting-label">BGM音量</span>
+                        <button id="bgm-toggle-btn" class="icon-btn" aria-label="BGM ON/OFF">🔊</button>
+                    </div>
                     <div class="volume-control">
                         <input type="range" id="bgm-volume" min="0" max="100" value="30" class="volume-slider">
                         <span id="bgm-volume-value" class="volume-value">30%</span>
@@ -69,13 +72,19 @@
     <div id="game-screen" class="screen">
         <div class="game-container">
             <div class="game-header">
-                <div class="timer-display">
-                    <span class="timer-icon">⏱️</span>
-                    <span id="timer" class="timer-value">60</span>
+                <div class="header-left">
+                    <button id="retire-btn" class="retire-btn">リタイア</button>
+                    <div class="score-display">
+                        <span class="score-label">スコア</span>
+                        <span id="current-score" class="score-value">0</span>
+                    </div>
                 </div>
-                <div class="score-display">
-                    <span class="score-label">正解数</span>
-                    <span id="current-score" class="score-value">0</span>
+                <div class="header-right">
+                    <div id="combo-container"></div>
+                    <div class="timer-display">
+                        <span class="timer-icon">⏱️</span>
+                        <span id="timer" class="timer-value">60</span>
+                    </div>
                 </div>
             </div>
 
@@ -104,9 +113,9 @@
             <h2 class="result-title">ゲーム終了！</h2>
 
             <div class="final-score">
-                <div class="score-label">正解数</div>
+                <div class="score-label">スコア</div>
                 <div id="final-score" class="score-number">0</div>
-                <div class="score-suffix">問</div>
+                <div class="score-suffix">点</div>
             </div>
 
             <div class="review-section">

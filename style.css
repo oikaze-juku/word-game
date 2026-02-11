@@ -150,14 +150,18 @@ body {
 }
 
 .setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .setting-item:last-child {
     margin-bottom: 0;
+}
+
+.setting-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .setting-label {
@@ -172,7 +176,7 @@ body {
 }
 
 .volume-slider {
-    width: 120px;
+    flex: 1;
     height: 6px;
     -webkit-appearance: none;
     appearance: none;
@@ -185,8 +189,8 @@ body {
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: #ffffff;
     border-radius: 50%;
     cursor: pointer;
@@ -195,22 +199,7 @@ body {
 }
 
 .volume-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-}
-
-.volume-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
-}
-
-.volume-slider::-moz-range-thumb:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 .volume-value {
@@ -221,6 +210,24 @@ body {
     text-align: right;
 }
 
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 18px;
+    cursor: pointer;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
 
 /* ボタン */
 .primary-btn,
@@ -263,10 +270,6 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.secondary-btn:active {
-    transform: scale(0.98);
-}
-
 /* ========================================
    ゲームメイン画面
    ======================================== */
@@ -285,32 +288,62 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    width: 100%;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.retire-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.retire-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .timer-display,
-.score-display {
+.score-display,
+.combo-display {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     border-radius: 12px;
-    padding: 12px 20px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .timer-icon {
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .timer-value {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
 }
 
 .timer-display.warning {
-    background: rgba(255, 87, 34, 0.3);
-    animation: pulse 1s infinite;
+    background: rgba(255, 87, 34, 0.6);
+    animation: pulse 0.5s infinite;
 }
 
 @keyframes pulse {
@@ -325,18 +358,44 @@ body {
     }
 }
 
-.score-display {
+.score-display,
+.combo-display {
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    min-width: 80px;
 }
 
-.score-label {
-    font-size: 12px;
+.combo-display {
+    display: none;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #333;
+}
+
+.combo-display.active {
+    display: flex;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.score-label,
+.combo-label {
+    font-size: 10px;
     opacity: 0.9;
+    font-weight: bold;
 }
 
-.score-value {
-    font-size: 24px;
+.score-value,
+.combo-value {
+    font-size: 18px;
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
 }
@@ -348,6 +407,40 @@ body {
     padding: 32px 24px;
     text-align: center;
     margin-bottom: 24px;
+    position: relative;
+}
+
+/* スコアポップアップ演出 */
+.score-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 48px;
+    color: #FFD700;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    animation: scorePopupAnim 1s ease-out forwards;
+    z-index: 10;
+}
+
+@keyframes scorePopupAnim {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    20% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -150%) scale(1);
+        opacity: 0;
+    }
 }
 
 .question-label {
@@ -387,6 +480,7 @@ body {
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .answer-slot.filled {
@@ -394,6 +488,15 @@ body {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.8);
     animation: fillSlot 0.3s ease;
+}
+
+/* ペナルティ用のヒント表示 */
+.answer-slot.hint::after {
+    content: attr(data-hint);
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.25;
+    color: white;
 }
 
 @keyframes fillSlot {
@@ -462,7 +565,6 @@ body {
         opacity: 1;
     }
 }
-
 
 .letter-panel {
     margin-top: auto;
