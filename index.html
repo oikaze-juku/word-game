@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>英単語暗記ゲーム</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- スタート画面 -->
+    <div id="start-screen" class="screen active">
+        <div class="container">
+            <h1 class="game-title">
+                <span class="title-main">英単語</span>
+                <span class="title-sub">スペルマスター</span>
+            </h1>
+            <p class="game-description">60秒でいくつ答えられる？</p>
+            
+            <div class="difficulty-section">
+                <h2 class="section-title">難易度を選択</h2>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-level="beginner">
+                        <span class="difficulty-icon">⭐</span>
+                        <span class="difficulty-label">初級</span>
+                    </button>
+                    <button class="difficulty-btn" data-level="intermediate">
+                        <span class="difficulty-icon">⭐⭐</span>
+                        <span class="difficulty-label">中級</span>
+                    </button>
+                    <button class="difficulty-btn" data-level="advanced">
+                        <span class="difficulty-icon">⭐⭐⭐</span>
+                        <span class="difficulty-label">上級</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="setting-item">
+                    <span class="setting-label">音声</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sound-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button id="start-btn" class="primary-btn" disabled>
+                <span>ゲームスタート</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ゲームメイン画面 -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="timer-display">
+                    <span class="timer-icon">⏱️</span>
+                    <span id="timer" class="timer-value">60</span>
+                </div>
+                <div class="score-display">
+                    <span class="score-label">正解数</span>
+                    <span id="current-score" class="score-value">0</span>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="question-label">日本語の意味</div>
+                <div id="question-text" class="question-text">りんご</div>
+            </div>
+
+            <div class="answer-area">
+                <div id="answer-slots" class="answer-slots">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+
+            <div class="letter-panel">
+                <div id="letter-buttons" class="letter-buttons">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- リザルト画面 -->
+    <div id="result-screen" class="screen">
+        <div class="container">
+            <h2 class="result-title">ゲーム終了！</h2>
+            
+            <div class="final-score">
+                <div class="score-label">正解数</div>
+                <div id="final-score" class="score-number">0</div>
+                <div class="score-suffix">問</div>
+            </div>
+
+            <div class="review-section">
+                <h3 class="section-title">復習リスト</h3>
+                <div id="review-list" class="review-list">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+
+            <div class="result-buttons">
+                <button id="retry-btn" class="primary-btn">
+                    <span>もう一度挑戦</span>
+                </button>
+                <button id="menu-btn" class="secondary-btn">
+                    <span>メニューに戻る</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
