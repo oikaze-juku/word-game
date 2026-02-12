@@ -280,9 +280,47 @@ function loadNextWord() {
 
 function createAnswerSlots() {
     answerSlots.innerHTML = '';
-    const isLongWord = currentWord.english.length >= 7;
+    const word = currentWord.english;
+    const isLongWord = word.length >= 7;
+    const needsWrap = word.length >= 10;
 
-    for (let i = 0; i < currentWord.english.length; i++) {
+    // 10文字以上なら改行位置を決める
+    let splitIndex = -1;
+    if (word.length >= 10) {
+        const middle = Math.floor(word.length / 2);
+        // 真ん中付近のスペースを探す
+        let bestSpaceIndex = -1;
+        let minDistance = 100;
+
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === ' ') {
+                const dist = Math.abs(i - middle);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    bestSpaceIndex = i;
+                }
+            }
+        }
+
+        // 適切なスペースがあればそこで改行（スペースの次の文字から2行目）
+        if (bestSpaceIndex !== -1 && minDistance < 4) {
+            splitIndex = bestSpaceIndex + 1;
+        } else {
+            // なければ単純に真ん中で切る
+            splitIndex = middle;
+        }
+    }
+
+    for (let i = 0; i < word.length; i++) {
+        // 改行ポイントなら改行要素を挿入（splitIndexの直前で改行）
+        if (splitIndex !== -1 && i === splitIndex) {
+            const breakLine = document.createElement('div');
+            breakLine.className = 'break-line'; // CSSでスタイル制御推奨
+            breakLine.style.flexBasis = '100%';
+            breakLine.style.height = '0';
+            answerSlots.appendChild(breakLine);
+        }
+
         const slot = document.createElement('div');
         slot.className = 'answer-slot';
         slot.dataset.index = i;
@@ -290,7 +328,7 @@ function createAnswerSlots() {
         // 7文字以上の単語は、最初の1文字だけヒントを表示
         if (isLongWord && i === 0) {
             slot.classList.add('hint');
-            slot.dataset.hint = currentWord.english[i].toLowerCase();
+            slot.dataset.hint = word[i].toLowerCase();
         }
 
         answerSlots.appendChild(slot);
