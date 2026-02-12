@@ -8,7 +8,7 @@ const GameState = {
 };
 
 let currentState = GameState.MENU;
-let selectedDifficulty = null;
+let selectedCategory = null;
 let wordList = [];
 let currentWordIndex = 0;
 let currentWord = null;
@@ -29,7 +29,7 @@ const startScreen = document.getElementById('start-screen');
 const gameScreen = document.getElementById('game-screen');
 const resultScreen = document.getElementById('result-screen');
 
-const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+const categoryGrid = document.getElementById('category-grid');
 const startBtn = document.getElementById('start-btn');
 const bgmVolumeSlider = document.getElementById('bgm-volume');
 const sfxVolumeSlider = document.getElementById('sfx-volume');
@@ -85,15 +85,44 @@ async function init() {
 }
 
 function setupEventListeners() {
-    // 難易度選択
-    difficultyButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            difficultyButtons.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedDifficulty = btn.dataset.level;
-            startBtn.disabled = false;
+    // カテゴリーボタンの生成
+    if (categoryGrid && window.wordsData) {
+        categoryGrid.innerHTML = '';
+
+        // コースIDと表示名・アイコンのマッピング
+        const categoryMap = {
+            "course1": { name: "時間・数・曜日", icon: "📅" },
+            "course2": { name: "たべもの・家", icon: "🍎" },
+            "course3": { name: "動物・自然・色", icon: "🐶" },
+            "course4": { name: "学校・行事", icon: "🏫" },
+            "course5": { name: "体・服・ようす", icon: "👕" },
+            "course6": { name: "街・人・乗物", icon: "🚗" },
+            "course7": { name: "身近なことば", icon: "💬" }
+        };
+
+        Object.keys(window.wordsData).forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = 'category-btn';
+            btn.dataset.category = key;
+
+            // マッピングがあればそれを使用、なければキーをそのまま表示
+            const categoryInfo = categoryMap[key] || { name: key, icon: "📝" };
+
+            btn.innerHTML = `
+                <span class="category-icon">${categoryInfo.icon}</span>
+                <span class="category-label">${categoryInfo.name}</span>
+            `;
+
+            btn.addEventListener('click', () => {
+                const allBtns = categoryGrid.querySelectorAll('.category-btn');
+                allBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedCategory = key;
+                startBtn.disabled = false;
+            });
+            categoryGrid.appendChild(btn);
         });
-    });
+    }
 
     // BGM音量設定
     bgmVolumeSlider.addEventListener('input', (e) => {
@@ -176,7 +205,7 @@ function showScreen(state) {
 function startGame() {
     resetGame();
 
-    wordList = [...window.wordsData[selectedDifficulty]];
+    wordList = [...window.wordsData[selectedCategory]];
     shuffleArray(wordList);
 
     currentWordIndex = 0;
@@ -271,7 +300,8 @@ function createAnswerSlots() {
 
 function createLetterButtons() {
     letterButtons.innerHTML = '';
-    const letters = currentWord.english.split('');
+    // スペースを除いた文字のリストを作成
+    const letters = currentWord.english.replace(/\s+/g, '').split('');
     shuffleArray(letters);
 
     letters.forEach((letter, index) => {
@@ -292,16 +322,19 @@ function handleLetterClick(btn) {
     if (isCheckingAnswer || btn.classList.contains('used')) return;
 
     const letter = btn.dataset.letter;
+
+    // スペースを除いた正解文字列
+    const targetString = currentWord.english.replace(/\s+/g, '');
     const currentIndex = userAnswer.length;
 
     // 正解の文字かチェック
-    if (letter === currentWord.english[currentIndex]) {
+    if (letter === targetString[currentIndex]) {
         audioManager.playCorrectSound(comboCount);
         userAnswer.push(letter);
         btn.classList.add('used');
         updateAnswerSlots();
 
-        if (userAnswer.length === currentWord.english.length) {
+        if (userAnswer.length === targetString.length) {
             checkAnswer();
         }
     } else {
@@ -347,6 +380,7 @@ function enterPenaltyMode() {
         answerArea.classList.add('wrong-flash');
         setTimeout(() => answerArea.classList.remove('wrong-flash'), 500);
     }
+    updateAnswerSlots(); // ペナルティモードに入ったらスロットを更新してアクティブなスロットを再設定
 }
 
 function updateAnswerSlots() {
@@ -355,19 +389,46 @@ function updateAnswerSlots() {
     // 全スロットから active を削除
     slots.forEach(slot => slot.classList.remove('active'));
 
-    userAnswer.forEach((letter, index) => {
-        if (slots[index]) {
-            slots[index].textContent = letter.toLowerCase();
-            slots[index].classList.add('filled');
-            slots[index].classList.remove('hint'); // 入力されたらヒントクラスも念のため外す
-        }
-    });
+    // ユーザーが入力した文字を、スペースを飛ばしながらスロットに埋めていく
+    let currentInputIdx = 0;
+    for (let i = 0; i < currentWord.english.length; i++) {
+        const char = currentWord.english[i];
+        const slot = slots[i];
 
-    // 次に入力すべきスロットを光らせる（アクティブ化）
-    if (userAnswer.length < currentWord.english.length) {
-        const nextIndex = userAnswer.length;
-        if (slots[nextIndex]) {
-            slots[nextIndex].classList.add('active');
+        if (char === ' ') {
+            slot.classList.add('space');
+            continue;
+        }
+
+        if (currentInputIdx < userAnswer.length) {
+            slot.textContent = userAnswer[currentInputIdx].toLowerCase();
+            slot.classList.add('filled');
+            slot.classList.remove('hint');
+            currentInputIdx++;
+        } else {
+            // 入力されていない非スペーススロットはクリア
+            slot.textContent = '';
+            slot.classList.remove('filled');
+            // ヒントは残すか、ペナルティモードで再設定される
+        }
+    }
+
+    // 次に入力すべき非スペーススロットを光らせる（アクティブ化）
+    let foundNext = false;
+    let filledNonSpaceCount = 0;
+    for (let i = 0; i < currentWord.english.length; i++) {
+        const char = currentWord.english[i];
+        const slot = slots[i];
+
+        if (char === ' ') {
+            continue;
+        }
+
+        if (slot.classList.contains('filled')) {
+            filledNonSpaceCount++;
+        } else if (filledNonSpaceCount === userAnswer.length && !foundNext) {
+            slot.classList.add('active');
+            foundNext = true;
         }
     }
 }
@@ -377,7 +438,7 @@ function updateAnswerSlots() {
 // ========================================
 function checkAnswer() {
     const userWord = userAnswer.join('');
-    const correctWord = currentWord.english;
+    const correctWord = currentWord.english.replace(/\s+/g, '');
 
     if (userWord === correctWord) {
         if (!isPenaltyMode) {
